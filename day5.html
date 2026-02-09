@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayFlow Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f6f9fc;
+            color: #32325d;
+        }
+
+        .navbar {
+            background-color: #635bff;
+            padding: 16px 32px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .navbar span {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            flex: 1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #8898aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .stat-card .value.green { color: #24b47e; }
+        .stat-card .value.blue { color: #635bff; }
+        .stat-card .value.red { color: #e25950; }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .payment-form {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .form-row input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e0e6ed;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-row input:focus {
+            border-color: #635bff;
+            box-shadow: 0 0 0 2px rgba(99, 91, 255, 0.2);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-pay {
+            background-color: #635bff;
+            color: white;
+        }
+
+        .btn-refund {
+            background-color: #e25950;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .transactions-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8898aa;
+            background: #f9fbfd;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-payment {
+            background: #e6f9f0;
+            color: #24b47e;
+        }
+
+        .badge-refund {
+            background: #fde8e7;
+            color: #e25950;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #8898aa;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>💳 PayFlow</h1>
+        <span>Dashboard</span>
+    </div>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="label">Balance</div>
+                <div class="value green" id="balance">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Transactions</div>
+                <div class="value blue" id="txnCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Refunds</div>
+                <div class="value red" id="refundTotal">$0.00</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">New Transaction</h2>
+        <div class="payment-form">
+            <div class="form-row">
+                <input type="text" id="customerName" placeholder="Customer name">
+                <input type="number" id="amount" placeholder="Amount ($)" step="0.01">
+            </div>
+            <div class="form-row">
+                <button class="btn btn-pay" onclick="makePayment()">💰 Process Payment</button>
+                <button class="btn btn-refund" onclick="makeRefund()">🔄 Process Refund</button>
+            </div>
+        </div>
+
+        <h2 class="section-title">Transaction History</h2>
+        <div class="transactions-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="txnBody">
+                    <tr>
+                        <td colspan="5" class="empty-state">No transactions yet. Process your first payment above!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let transactions = [];
+        let balance = 0;
+        let refundTotal = 0;
+
+        function updateDashboard() {
+            document.getElementById("balance").textContent = "$" + balance.toFixed(2);
+            document.getElementById("txnCount").textContent = transactions.length;
+            document.getElementById("refundTotal").textContent = "$" + refundTotal.toFixed(2);
+        }
+
+        function renderTransactions() {
+            let tbody = document.getElementById("txnBody");
+
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No transactions yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = "";
+            for (let i = transactions.length - 1; i >= 0; i--) {
+                let t = transactions[i];
+                let badgeClass = t.type === "payment" ? "badge-payment" : "badge-refund";
+                let symbol = t.type === "payment" ? "+$" : "-$";
+
+                tbody.innerHTML += '<tr>' +
+                    '<td>' + t.id + '</td>' +
+                    '<td><span class="badge ' + badgeClass + '">' + t.type + '</span></td>' +
+                    '<td>' + t.customer + '</td>' +
+                    '<td>' + symbol + t.amount.toFixed(2) + '</td>' +
+                    '<td>' + t.date + '</td>' +
+                    '</tr>';
+            }
+        }
+
+        function makePayment() {
+            let name = document.getElementById("customerName").value;
+            let amount = parseFloat(document.getElementById("amount").value);
+
+            if (!name) { alert("Enter a customer name"); return; }
+            if (!amount || amount <= 0) { alert("Enter a valid amount"); return; }
+
+            balance += amount;
+            transactions.push({
+                id: "txn_" + (transactions.length + 1),
+                type: "payment",
+                amount: amount,
+                customer: name,
+                date: new Date().toLocaleString()
+            });
+
+            document.getElementById("customerName").value = "";
+            document.getElementById("amount").value = "";
+            updateDashboard();
+            renderTransactions();
+        }
+
+        function makeRefund() {
+            let name = document.getElementById("customerName").value;
+            let amount = parseFloat(document.getElementById("amount").value);
+
+            if (!name) { alert("Enter a customer name"); return; }
+            if (!amount || amount <= 0) { alert("Enter a valid amount"); return; }
+            if (amount > balance) { alert("Refund exceeds balance!"); return; }
+
+            balance -= amount;
+            refundTotal += amount;
+            transactions.push({
+                id: "txn_" + (transactions.length + 1),
+                type: "refund",
+                amount: amount,
+                customer: name,
+                date: new Date().toLocaleString()
+            });
+
+            document.getElementById("customerName").value = "";
+            document.getElementById("amount").value = "";
+            updateDashboard();
+            renderTransactions();
+        }
+    </script>
+</body>
+</html>
+
+

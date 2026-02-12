@@ -8,13 +8,11 @@ type Transaction = {
   type: "payment" | "refund";
   amount: number;
   customer: string;
-  date: string;
+  created_at: string;
 };
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [balance, setBalance] = useState(0);
-  const [refundTotal, setRefundTotal] = useState(0);
   const [customerName, setCustomerName] = useState("");
   const [amount, setAmount] = useState("");
   const [user, setUser] = useState<any>(null);
@@ -27,51 +25,79 @@ export default function Home() {
         router.push("/login");
       } else {
         setUser(data.user);
-        setLoading(false);
+        loadTransactions(data.user.id);
       }
     });
   }, [router]);
+
+  async function loadTransactions(userId: string) {
+    const { data, error } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setTransactions(data);
+    }
+    setLoading(false);
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut();
     router.push("/login");
   }
 
-  function makePayment() {
+  async function makePayment() {
     if (!customerName) { alert("Enter a customer name"); return; }
     const amt = parseFloat(amount);
     if (!amt || amt <= 0) { alert("Enter a valid amount"); return; }
 
-    setBalance(prev => prev + amt);
-    setTransactions(prev => [...prev, {
-      id: "txn_" + (prev.length + 1),
+    const { data, error } = await supabase.from("transactions").insert({
+      user_id: user.id,
       type: "payment",
       amount: amt,
       customer: customerName,
-      date: new Date().toLocaleString()
-    }]);
-    setCustomerName("");
-    setAmount("");
+    }).select().single();
+
+    if (!error && data) {
+      setTransactions(prev => [data, ...prev]);
+      setCustomerName("");
+      setAmount("");
+    } else {
+      alert("Error saving transaction");
+    }
   }
 
-  function makeRefund() {
+  async function makeRefund() {
     if (!customerName) { alert("Enter a customer name"); return; }
     const amt = parseFloat(amount);
     if (!amt || amt <= 0) { alert("Enter a valid amount"); return; }
     if (amt > balance) { alert("Refund exceeds balance!"); return; }
 
-    setBalance(prev => prev - amt);
-    setRefundTotal(prev => prev + amt);
-    setTransactions(prev => [...prev, {
-      id: "txn_" + (prev.length + 1),
+    const { data, error } = await supabase.from("transactions").insert({
+      user_id: user.id,
       type: "refund",
       amount: amt,
       customer: customerName,
-      date: new Date().toLocaleString()
-    }]);
-    setCustomerName("");
-    setAmount("");
+    }).select().single();
+
+    if (!error && data) {
+      setTransactions(prev => [data, ...prev]);
+      setCustomerName("");
+      setAmount("");
+    } else {
+      alert("Error saving transaction");
+    }
   }
+
+  const balance = transactions.reduce((sum, t) => {
+    return t.type === "payment" ? sum + Number(t.amount) : sum - Number(t.amount);
+  }, 0);
+
+  const refundTotal = transactions
+    .filter(t => t.type === "refund")
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
@@ -133,13 +159,13 @@ export default function Home() {
               {transactions.length === 0 ? (
                 <tr><td colSpan={5} className="text-center py-10 text-gray-400">No transactions yet. Process your first payment above!</td></tr>
               ) : (
-                [...transactions].reverse().map((t) => (
+                transactions.map((t) => (
                   <tr key={t.id} className="border-b border-gray-100">
-                    <td className="px-4 py-3 text-sm">{t.id}</td>
+                    <td className="px-4 py-3 text-sm font-mono">{t.id.slice(0, 8)}...</td>
                     <td className="px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${t.type === "payment" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"}`}>{t.type}</span></td>
                     <td className="px-4 py-3 text-sm">{t.customer}</td>
-                    <td className="px-4 py-3 text-sm">{t.type === "payment" ? "+" : "-"}${t.amount.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{t.date}</td>
+                    <td className="px-4 py-3 text-sm">{t.type === "payment" ? "+" : "-"}${Number(t.amount).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{new Date(t.created_at).toLocaleString()}</td>
                   </tr>
                 ))
               )}

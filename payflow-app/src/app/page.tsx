@@ -106,7 +106,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-indigo-600 px-8 py-4 flex justify-between items-center">
-        <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
+        <div className="flex items-center gap-6">
+          <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
+          <a href="/" className="text-white text-sm font-semibold">Dashboard</a>
+          <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
+          <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
+        </div>
         <div className="flex items-center gap-4">
           <span className="text-indigo-200 text-sm">{user?.email}</span>
           <button onClick={handleLogout} className="text-white text-sm bg-indigo-700 px-3 py-1 rounded-md hover:bg-indigo-800">

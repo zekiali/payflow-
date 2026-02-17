@@ -6,7 +6,7 @@ export default function Docs() {
       <nav className="bg-indigo-600 px-8 py-4 flex justify-between items-center">
         <div className="flex items-center gap-6">
           <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
-          <a href="/" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
+          <a href="/dashboard" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
           <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
           <a href="/docs" className="text-white text-sm font-semibold">API Docs</a>
         </div>

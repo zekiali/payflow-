@@ -127,6 +127,7 @@ export default function Home() {
         <div className="flex items-center gap-6">
           <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
           <a href="/dashboard" className="text-white text-sm font-semibold">Dashboard</a>
+          <a href="/customers" className="text-indigo-200 text-sm hover:text-white">Customers</a>
           <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
           <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
         </div>

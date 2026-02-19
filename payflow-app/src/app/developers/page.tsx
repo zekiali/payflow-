@@ -87,6 +87,7 @@ export default function Developers() {
         <div className="flex items-center gap-6">
           <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
           <a href="/dashboard" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
+          <a href="/customers" className="text-indigo-200 text-sm hover:text-white">Customers</a>
           <a href="/developers" className="text-white text-sm font-semibold">Developers</a>
           <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
         </div>

@@ -142,6 +142,86 @@ export default function Docs() {
         </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">POST</span>
+            <h3 className="text-xl font-bold">/api/refunds</h3>
+          </div>
+          <p className="text-gray-600 mb-4">Create a refund. Validates that the refund amount does not exceed your available balance.</p>
+
+          <h4 className="font-semibold mb-2">Request Body</h4>
+          <div className="bg-gray-50 rounded-md p-4 mb-4">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-gray-500">
+                  <th className="pb-2">Parameter</th>
+                  <th className="pb-2">Type</th>
+                  <th className="pb-2">Required</th>
+                  <th className="pb-2">Description</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-700">
+                <tr className="border-t border-gray-200">
+                  <td className="py-2 font-mono">amount</td>
+                  <td className="py-2">integer</td>
+                  <td className="py-2">Yes</td>
+                  <td className="py-2">Refund amount in cents</td>
+                </tr>
+                <tr className="border-t border-gray-200">
+                  <td className="py-2 font-mono">customer</td>
+                  <td className="py-2">string</td>
+                  <td className="py-2">Yes</td>
+                  <td className="py-2">Customer name</td>
+                </tr>
+                <tr className="border-t border-gray-200">
+                  <td className="py-2 font-mono">reason</td>
+                  <td className="py-2">string</td>
+                  <td className="py-2">No</td>
+                  <td className="py-2">Reason for refund</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 className="font-semibold mb-2">Example Request</h4>
+          <pre className="bg-gray-900 rounded-md p-4 text-sm text-green-400 overflow-x-auto mb-4">
+{`curl -X POST https://payflow-app-pi.vercel.app/api/refunds \\
+  -H "Authorization: Bearer pk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "amount": 1000,
+    "customer": "Jane Doe",
+    "reason": "Product returned"
+  }'`}
+          </pre>
+
+          <h4 className="font-semibold mb-2">Example Response</h4>
+          <pre className="bg-gray-900 rounded-md p-4 text-sm text-blue-400 overflow-x-auto">
+{`{
+  "id": "a1b2c3d4-...",
+  "object": "refund",
+  "amount": 1000,
+  "currency": "usd",
+  "customer": "Jane Doe",
+  "reason": "Product returned",
+  "status": "succeeded",
+  "created": "2026-02-17T..."
+}`}
+          </pre>
+        </div>
+
+        <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">GET</span>
+            <h3 className="text-xl font-bold">/api/refunds</h3>
+          </div>
+          <p className="text-gray-600 mb-4">List all refunds for your account.</p>
+          <pre className="bg-gray-900 rounded-md p-4 text-sm text-green-400 overflow-x-auto">
+{`curl https://payflow-app-pi.vercel.app/api/refunds \\
+  -H "Authorization: Bearer pk_live_your_api_key"`}
+          </pre>
+        </div>
+
+        <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
           <h3 className="text-xl font-bold mb-3">Error Handling</h3>
           <p className="text-gray-600 mb-4">PayFlow uses standard HTTP status codes. Errors return a JSON object with details:</p>
           <pre className="bg-gray-900 rounded-md p-4 text-sm text-red-400 overflow-x-auto mb-4">

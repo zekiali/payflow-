@@ -19,6 +19,9 @@ export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"overview" | "transactions">("overview");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
   const router = useRouter();
 
   useEffect(() => {
@@ -80,6 +83,28 @@ export default function Home() {
 
   const refundTotal = transactions.filter(t => t.type === "refund").reduce((sum, t) => sum + Number(t.amount), 0);
   const paymentTotal = transactions.filter(t => t.type === "payment").reduce((sum, t) => sum + Number(t.amount), 0);
+
+  // Filtered and sorted transactions
+  const filteredTransactions = transactions
+    .filter(t => {
+      const matchesSearch = searchQuery === "" ||
+        t.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.id.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = filterType === "all" || t.type === filterType;
+      return matchesSearch && matchesType;
+    })
+    .sort((a, b) => {
+      switch (sortOrder) {
+        case "oldest":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "highest":
+          return Number(b.amount) - Number(a.amount);
+        case "lowest":
+          return Number(a.amount) - Number(b.amount);
+        default: // newest
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
 
   // Chart data: group transactions by date
   const chartData = transactions.reduce((acc: any[], t) => {
@@ -220,8 +245,59 @@ export default function Home() {
 
         {/* Transaction History */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-sm font-semibold text-gray-700">Transaction History</h3>
+            <button
+              onClick={() => {
+                const headers = ["ID", "Type", "Customer", "Amount", "Date"];
+                const csvData = filteredTransactions.map(t => [
+                  t.id,
+                  t.type,
+                  t.customer,
+                  Number(t.amount).toFixed(2),
+                  new Date(t.created_at).toLocaleString()
+                ]);
+                const csvContent = [headers, ...csvData].map(row => row.join(",")).join("\n");
+                const blob = new Blob([csvContent], { type: "text/csv" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "transactions.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="text-sm text-indigo-600 font-semibold hover:text-indigo-800"
+            >
+              📥 Export CSV
+            </button>
+          </div>
+          <div className="px-6 py-3 border-b border-gray-200 flex gap-4">
+            <input
+              type="text"
+              placeholder="🔍 Search by customer or ID..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-indigo-500"
+            />
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-indigo-500"
+            >
+              <option value="all">All Types</option>
+              <option value="payment">Payments</option>
+              <option value="refund">Refunds</option>
+            </select>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-indigo-500"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="highest">Highest Amount</option>
+              <option value="lowest">Lowest Amount</option>
+            </select>
           </div>
           <table className="w-full">
             <thead>
@@ -234,10 +310,10 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {transactions.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-10 text-gray-400">No transactions yet. Process your first payment above!</td></tr>
+              {filteredTransactions.length === 0 ? (
+                <tr><td colSpan={5} className="text-center py-10 text-gray-400">No transactions found.</td></tr>
               ) : (
-                transactions.map((t) => (
+                filteredTransactions.map((t) => (
                   <tr key={t.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-mono">{t.id.slice(0, 8)}...</td>
                     <td className="px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${t.type === "payment" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"}`}>{t.type}</span></td>
@@ -249,6 +325,9 @@ export default function Home() {
               )}
             </tbody>
           </table>
+          <div className="px-6 py-3 border-t border-gray-200 text-sm text-gray-500">
+            Showing {filteredTransactions.length} of {transactions.length} transactions
+          </div>
         </div>
       </div>
     </div>

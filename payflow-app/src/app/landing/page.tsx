@@ -188,9 +188,11 @@ export default function Landing() {
       <footer className="py-12 border-t border-gray-200">
         <div className="max-w-6xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 text-sm">© 2026 PayFlow. All rights reserved.</p>
-          <div className="flex gap-6">
+          <div className="flex gap-6 flex-wrap justify-center">
             <a href="/docs" className="text-gray-400 text-sm hover:text-gray-600">Documentation</a>
             <a href="/developers" className="text-gray-400 text-sm hover:text-gray-600">Developers</a>
+            <a href="/customers" className="text-gray-400 text-sm hover:text-gray-600">Customers</a>
+            <a href="/settings" className="text-gray-400 text-sm hover:text-gray-600">Settings</a>
             <a href="/login" className="text-gray-400 text-sm hover:text-gray-600">Sign In</a>
           </div>
         </div>

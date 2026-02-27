@@ -93,6 +93,7 @@ export default function Developers() {
               <a href="/customers" className="text-indigo-200 text-sm hover:text-white">Customers</a>
               <a href="/developers" className="text-white text-sm font-semibold">Developers</a>
               <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
+              <a href="/settings" className="text-indigo-200 text-sm hover:text-white">⚙️</a>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -107,6 +108,7 @@ export default function Developers() {
             <a href="/customers" className="text-indigo-200 text-sm hover:text-white">Customers</a>
             <a href="/developers" className="text-white text-sm font-semibold">Developers</a>
             <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
+            <a href="/settings" className="text-indigo-200 text-sm hover:text-white">⚙️ Settings</a>
             <span className="text-indigo-200 text-sm">{user?.email}</span>
             <button onClick={handleLogout} className="text-white text-sm bg-indigo-700 px-3 py-1 rounded-md hover:bg-indigo-800 w-fit">Logout</button>
           </div>

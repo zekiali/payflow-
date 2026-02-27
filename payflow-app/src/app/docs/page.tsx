@@ -12,8 +12,10 @@ export default function Docs() {
             <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
             <div className="hidden md:flex items-center gap-6">
               <a href="/dashboard" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
+              <a href="/customers" className="text-indigo-200 text-sm hover:text-white">Customers</a>
               <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
               <a href="/docs" className="text-white text-sm font-semibold">API Docs</a>
+              <a href="/settings" className="text-indigo-200 text-sm hover:text-white">⚙️</a>
             </div>
           </div>
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white text-2xl">☰</button>
@@ -21,8 +23,10 @@ export default function Docs() {
         {mobileMenuOpen && (
           <div className="md:hidden mt-4 flex flex-col gap-3 border-t border-indigo-500 pt-4">
             <a href="/dashboard" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
+            <a href="/customers" className="text-indigo-200 text-sm hover:text-white">Customers</a>
             <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
             <a href="/docs" className="text-white text-sm font-semibold">API Docs</a>
+            <a href="/settings" className="text-indigo-200 text-sm hover:text-white">⚙️ Settings</a>
           </div>
         )}
       </nav>

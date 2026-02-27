@@ -18,6 +18,7 @@ export default function Customers() {
   const [loading, setLoading] = useState(true);
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [customerTransactions, setCustomerTransactions] = useState<any[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -93,26 +94,41 @@ export default function Customers() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-indigo-600 px-8 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-6">
-          <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
-          <a href="/dashboard" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
-          <a href="/customers" className="text-white text-sm font-semibold">Customers</a>
-          <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
-          <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
+      <nav className="bg-indigo-600 px-4 md:px-8 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-6">
+            <h1 className="text-white text-xl font-bold">💳 PayFlow</h1>
+            <div className="hidden md:flex items-center gap-6">
+              <a href="/dashboard" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
+              <a href="/customers" className="text-white text-sm font-semibold">Customers</a>
+              <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
+              <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="hidden md:inline text-indigo-200 text-sm">{user?.email}</span>
+            <button onClick={handleLogout} className="hidden md:inline text-white text-sm bg-indigo-700 px-3 py-1 rounded-md hover:bg-indigo-800">Logout</button>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white text-2xl">☰</button>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-indigo-200 text-sm">{user?.email}</span>
-          <button onClick={handleLogout} className="text-white text-sm bg-indigo-700 px-3 py-1 rounded-md hover:bg-indigo-800">Logout</button>
-        </div>
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-4 flex flex-col gap-3 border-t border-indigo-500 pt-4">
+            <a href="/dashboard" className="text-indigo-200 text-sm hover:text-white">Dashboard</a>
+            <a href="/customers" className="text-white text-sm font-semibold">Customers</a>
+            <a href="/developers" className="text-indigo-200 text-sm hover:text-white">Developers</a>
+            <a href="/docs" className="text-indigo-200 text-sm hover:text-white">API Docs</a>
+            <span className="text-indigo-200 text-sm">{user?.email}</span>
+            <button onClick={handleLogout} className="text-white text-sm bg-indigo-700 px-3 py-1 rounded-md hover:bg-indigo-800 w-fit">Logout</button>
+          </div>
+        )}
       </nav>
 
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="max-w-6xl mx-auto p-4 md:p-6">
         <h2 className="text-2xl font-bold mb-2">Customers</h2>
         <p className="text-gray-500 mb-8">View and manage all customers who have transacted through PayFlow.</p>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Total Customers</p>
             <p className="text-2xl font-semibold text-indigo-600">{totalCustomers}</p>
@@ -138,9 +154,9 @@ export default function Customers() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Customer List */}
-          <div className="col-span-2 bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-sm overflow-hidden overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
